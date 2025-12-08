@@ -1,26 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React from "react";
 
 const NavBar = () => {
-  const [currentUser, setCurrentUser] = useState(null);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("currentUser"));
-    setCurrentUser(user);
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("currentUser");
-    setCurrentUser(null);
-    navigate("/login");
-  };
-
+  const menuItems = [
+    { link: "/", text: "Home" },
+    { link: "/create", text: "Create New Post" },
+  ];
   return (
-    <div className="navbar bg-base-100 shadow-sm px-4">
+    <div className="navbar bg-base-100 shadow-sm">
       <div className="navbar-start">
         <div className="dropdown">
-          <label tabIndex={0} className="btn btn-ghost lg:hidden">
+          <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5"
@@ -28,95 +17,50 @@ const NavBar = () => {
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
+              {" "}
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="2"
                 d="M4 6h16M4 12h8m-8 6h16"
-              />
+              />{" "}
             </svg>
-          </label>
+          </div>
           <ul
-            tabIndex={0}
-            className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
+            tabIndex="-1"
+            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
           >
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            {!currentUser && (
-              <>
-                <li>
-                  <Link to="/register">Register</Link>
-                </li>
-                <li>
-                  <Link to="/login">Login</Link>
-                </li>
-              </>
-            )}
-            {currentUser && currentUser.role === "owner" && (
+            {menuItems.map((item) => (
               <li>
-                <Link to="/newpost">Create Post</Link>
+                <a href={item.link}>{item.text}</a>
               </li>
-            )}
-            {currentUser && (
-              <li>
-                <button onClick={handleLogout}>Logout</button>
-              </li>
-            )}
+            ))}
           </ul>
         </div>
-
-        <Link to="/" className="btn btn-ghost text-xl">
-          MERN Stack Blog
-        </Link>
+        <a className="btn btn-ghost text-xl">SE NPRU Blog</a>
       </div>
-
-      <div className="navbar-end hidden lg:flex items-center gap-4">
-        {!currentUser && (
-          <>
-            <Link to="/register" className="btn btn-outline btn-primary">
-              Register
-            </Link>
-            <Link to="/login" className="btn btn-outline btn-success">
-              Login
-            </Link>
-          </>
-        )}
-
-        {currentUser && (
-          <div className="dropdown dropdown-end">
-            <label tabIndex={0} className="btn btn-ghost rounded-btn">
-              {currentUser.username} ({currentUser.role})
-              <svg
-                className="ml-2 w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M19 9l-7 7-7-7"
-                ></path>
-              </svg>
-            </label>
-            <ul
-              tabIndex={0}
-              className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 mt-4"
-            >
-              {currentUser.role === "owner" && (
-                <li>
-                  <Link to="/newpost">Create Post</Link>
-                </li>
-              )}
-              <li>
-                <button onClick={handleLogout}>Logout</button>
-              </li>
-            </ul>
-          </div>
-        )}
+      <div className="navbar-center hidden lg:flex">
+        <ul className="menu menu-horizontal px-1">
+          {menuItems.map((item) => (
+            <li>
+              <a href={item.link}>{item.text}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="navbar-end space-x-2 gap-3">
+        <a
+          href="/register"
+          className="btn btn-outline btn-primary rounded-xl shadow-sm hover:shadow-md hover:scale-105 transition-transform"
+        >
+          Register
+        </a>
+        <a
+          href="/login"
+          className="btn btn-outline btn-success rounded-xl shadow-sm hover:shadow-md hover:scale-105 transition-transform"
+        >
+          Login
+        </a>
       </div>
     </div>
   );

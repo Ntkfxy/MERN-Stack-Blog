@@ -1,23 +1,26 @@
 import { createBrowserRouter } from "react-router-dom";
-import App from "../App";
+
 import Home from "../pages/Home";
-import Post from "../pages/Post";
+import PostDetail from "../pages/PostDetail";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
-import NewPost from "../pages/Newpost";
-import EditPost from "../pages/EditPost";
+import Create from "../pages/Create";
+import Edit from "../pages/Edit";
+import MainLayout from "../components/MainLayout";
+import PostByAuthor from "../pages/PostByAuthor";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />, // App เป็น layout หลัก
+    element: <MainLayout />,
     children: [
       { path: "/", element: <Home /> },
-      { path: "/post/:id", element: <Post /> },
+      { path: "/post/:id", element: <PostDetail /> },
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
-      { path: "/newpost", element: <NewPost /> },
-      { path: "/editpost/:id", element: <EditPost /> },
+      { path: "/create", element: <Create /> },
+      { path: "/edit/:id", element: <Edit /> },
+      { path: "/author/:id", element: <PostByAuthor /> },
     ],
   },
 ]);

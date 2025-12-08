@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import "react-quill/dist/quill.snow.css";
 
-const NewPost = () => {
+const Create = () => {
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
   const [content, setContent] = useState("");
@@ -114,4 +114,4 @@ const NewPost = () => {
   );
 };
 
-export default NewPost;
+export default Create;

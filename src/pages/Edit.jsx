@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import { useParams, useNavigate } from "react-router-dom";
 import "react-quill/dist/quill.snow.css";
 
-const EditPost = () => {
+const Edit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
@@ -123,4 +123,4 @@ const EditPost = () => {
   );
 };
 
-export default EditPost;
+export default Edit;
