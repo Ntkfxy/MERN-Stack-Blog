@@ -26,13 +26,24 @@ const Register = () => {
       });
       return;
     }
+
+    const newUser = {
+      username,
+      password,
+      role: "owner",
+    };
+
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+    users.push(newUser);
+    localStorage.setItem("users", JSON.stringify(users));
+
     Swal.fire({
       icon: "success",
       title: "Registration Successful",
       text: `ยินดีต้อนรับ, ${username}!`,
       confirmButtonText: "OK",
     }).then(() => {
-      navigate("/login"); 
+      navigate("/login");
     });
   };
 

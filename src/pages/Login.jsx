@@ -8,7 +8,7 @@ const Login = () => {
     password: "",
   });
 
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,13 +27,30 @@ const Login = () => {
       return;
     }
 
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+
+    const user = users.find(
+      (u) => u.username === username && u.password === password
+    );
+
+    if (!user) {
+      Swal.fire({
+        icon: "error",
+        title: "Login Failed",
+        text: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง",
+      });
+      return;
+    }
+
+    localStorage.setItem("currentUser", JSON.stringify(user));
+
     Swal.fire({
       icon: "success",
       title: "Login Successful",
       text: `ยินดีต้อนรับ, ${username}!`,
       confirmButtonText: "OK",
     }).then(() => {
-      navigate("/"); 
+      navigate("/");
     });
   };
 

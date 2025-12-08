@@ -11,9 +11,11 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.17",
+    "@tinymce/tinymce-react": "^6.3.0",
     "json-server": "^1.0.0-beta.3",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-quill": "^2.0.0",
     "react-router-dom": "^7.10.1",
     "sweetalert2": "^11.26.4",
     "tailwindcss": "^4.1.17"
