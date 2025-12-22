@@ -1,9 +1,10 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
+import AuthService from "../service/authentication.service";
 
 const Register = () => {
-  const [registerData, setRegisterData] = useState({
+  const [user, setUser] = useState({
     username: "",
     password: "",
   });
@@ -12,76 +13,105 @@ const Register = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setRegisterData((prev) => ({ ...prev, [name]: value }));
+    setUser((prevUser) => ({ ...prevUser, [name]: value }));
   };
 
-  const handleSubmit = () => {
-    const { username, password } = registerData;
+  const handleSubmit = async () => {
+    try {
+      if (!user.username || !user.password) {
+        Swal.fire({
+          title: "Error",
+          icon: "error",
+          text: "Username or Password cannot be empty!",
+        });
+        return;
+      }
 
-    if (!username || !password) {
+      const response = await AuthService.register(user.username, user.password);
+
+      if (response.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: "สมัครสำเร็จ",
+          text: "",
+        }).then(() => {
+          navigate("/login");
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "สมัครไม่สำเร็จ",
+          text: response?.data?.message || "เกิดข้อผิดพลาดบางอย่าง",
+        });
+      }
+    } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "Registration Failed",
-        text: "กรุณากรอก Username และ Password",
+        title: "เกิดข้อผิดพลาด",
+        text: error.message,
       });
-      return;
     }
-
-    const newUser = {
-      username,
-      password,
-      role: "owner",
-    };
-
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-    users.push(newUser);
-    localStorage.setItem("users", JSON.stringify(users));
-
-    Swal.fire({
-      icon: "success",
-      title: "Registration Successful",
-      text: `ยินดีต้อนรับ, ${username}!`,
-      confirmButtonText: "OK",
-    }).then(() => {
-      navigate("/login");
-    });
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-pink-50">
-      <div className="card w-full max-w-sm p-8 bg-white shadow-lg rounded-lg border border-purple-200">
-        <h2 className="text-3xl font-bold mb-6 text-center text-purple-700">
+    <div>
+      <div className="card w-full max-w-md p-8 bg-white shadow-xl rounded-2xl border border-purple-200">
+        <h2 className="text-3xl font-bold mb-8 text-center text-purple-700">
           Register
         </h2>
 
-        <div className="form-control mb-5">
+        {/* Username */}
+        <div className="form-control mb-6">
+          <label className="label">
+            <span className="label-text font-semibold text-purple-600">
+              Username
+            </span>
+          </label>
           <input
             type="text"
             name="username"
-            placeholder="Username"
-            className="input input-bordered w-full pr-3 pl-3 rounded-md focus:ring-2 focus:ring-purple-400 focus:border-purple-400 shadow-sm"
-            value={registerData.username}
+            placeholder="Enter your username"
+            className="input input-bordered w-full rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-purple-400 shadow-sm"
+            value={user.username}
             onChange={handleChange}
           />
         </div>
 
+        {/* Password */}
         <div className="form-control mb-6">
+          <label className="label">
+            <span className="label-text font-semibold text-purple-600">
+              Password
+            </span>
+          </label>
           <input
             type="password"
             name="password"
-            placeholder="Password"
-            className="input input-bordered w-full pr-3 pl-3 rounded-md focus:ring-2 focus:ring-purple-400 focus:border-purple-400 shadow-sm"
-            value={registerData.password}
+            placeholder="Enter your password"
+            className="input input-bordered w-full rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-purple-400 shadow-sm"
+            value={user.password}
             onChange={handleChange}
           />
         </div>
 
+        {/* Submit Button */}
         <button
           onClick={handleSubmit}
-          className="btn btn-primary w-full bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-md transition-transform transform hover:scale-105 shadow-md"
+          className="btn btn-primary w-full bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-lg py-2 transition-transform transform hover:scale-105 shadow-md"
         >
           Register
         </button>
+
+        {/* Optional: link to login */}
+        <p className="mt-4 text-center text-sm text-gray-500">
+          Already have an account?{" "}
+          <span
+            className="text-purple-600 hover:underline cursor-pointer"
+            onClick={() => navigate("/login")}
+          >
+            Login
+          </span>
+        </p>
       </div>
     </div>
   );

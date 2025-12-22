@@ -1,9 +1,10 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router";
+import AuthService from "../service/authentication.service";
 
 const Login = () => {
-  const [loginData, setLoginData] = useState({
+  const [user, setUser] = useState({
     username: "",
     password: "",
   });
@@ -12,83 +13,91 @@ const Login = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setLoginData((prev) => ({ ...prev, [name]: value }));
+    setUser((user) => ({ ...user, [name]: value }));
   };
 
-  const handleSubmit = () => {
-    const { username, password } = loginData;
-
-    if (!username || !password) {
+  const handleSubmit = async () => {
+    if (!user.username || !user.password) {
       Swal.fire({
+        title: "Error",
         icon: "error",
-        title: "Login Failed",
-        text: "กรุณากรอก Username และ Password",
+        text: "Username or Password cannot be empty!",
       });
       return;
+    } else {
+      const response = await AuthService.login(user.username, user.password);
+
+      if (response?.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: "สมัครสำเร็จ",
+          text: response?.data?.message,
+        }).then(() => {
+          navigate("/");
+        });
+      }
     }
-
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-
-    const user = users.find(
-      (u) => u.username === username && u.password === password
-    );
-
-    if (!user) {
-      Swal.fire({
-        icon: "error",
-        title: "Login Failed",
-        text: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง",
-      });
-      return;
-    }
-
-    localStorage.setItem("currentUser", JSON.stringify(user));
-
-    Swal.fire({
-      icon: "success",
-      title: "Login Successful",
-      text: `ยินดีต้อนรับ, ${username}!`,
-      confirmButtonText: "OK",
-    }).then(() => {
-      navigate("/");
-    });
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-pink-50">
-      <div className="card w-full max-w-sm p-8 bg-white shadow-lg rounded-lg border border-purple-200">
-        <h2 className="text-3xl font-bold mb-6 text-center text-purple-700">
+    <div>
+      <div className="card w-full max-w-md p-8 bg-white shadow-xl rounded-2xl border border-purple-200">
+        <h2 className="text-3xl font-bold mb-8 text-center text-purple-700">
           Login
         </h2>
 
-        <div className="form-control mb-5">
+        {/* Username */}
+        <div className="form-control mb-6">
+          <label className="label">
+            <span className="label-text font-semibold text-purple-600">
+              Username
+            </span>
+          </label>
           <input
             type="text"
             name="username"
-            placeholder="Username"
-            className="input input-bordered w-full pr-3 pl-3 rounded-md focus:ring-2 focus:ring-purple-400 focus:border-purple-400 shadow-sm"
-            value={loginData.username}
+            placeholder="Enter your username"
+            className="input input-bordered w-full rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-purple-400 shadow-sm"
+            value={user.username}
             onChange={handleChange}
           />
         </div>
 
+        {/* Password */}
         <div className="form-control mb-6">
+          <label className="label">
+            <span className="label-text font-semibold text-purple-600">
+              Password
+            </span>
+          </label>
           <input
             type="password"
             name="password"
-            placeholder="Password"
-            className="input input-bordered w-full pr-3 pl-3 rounded-md focus:ring-2 focus:ring-purple-400 focus:border-purple-400 shadow-sm"
-            value={loginData.password}
+            placeholder="Enter your password"
+            className="input input-bordered w-full rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-purple-400 shadow-sm"
+            value={user.password}
             onChange={handleChange}
           />
         </div>
 
+        {/* Submit Button */}
         <button
           onClick={handleSubmit}
-          className="btn btn-primary w-full bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-md transition-transform transform hover:scale-105 shadow-md"
+          className="btn btn-primary w-full bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-lg py-2 transition-transform transform hover:scale-105 shadow-md"
         >
           Login
         </button>
+
+        {/* Optional: link to register */}
+        <p className="mt-4 text-center text-sm text-gray-500">
+          Don't have an account?{" "}
+          <span
+            className="text-purple-600 hover:underline cursor-pointer"
+            onClick={() => navigate("/register")}
+          >
+            Register
+          </span>
+        </p>
       </div>
     </div>
   );
