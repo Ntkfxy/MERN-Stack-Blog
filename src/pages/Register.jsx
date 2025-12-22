@@ -1,19 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import AuthService from "../service/authentication.service";
+import { UserContext } from "../context/UserContext";
 
 const Register = () => {
   const [user, setUser] = useState({
     username: "",
     password: "",
   });
-
   const navigate = useNavigate();
+
+  const { userInfo } = useContext(UserContext);
+  useEffect(() => {
+    if (userInfo) {
+      navigate("/register");
+    }
+  }, [userInfo, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setUser((prevUser) => ({ ...prevUser, [name]: value }));
+    setUser((user) => ({ ...user, [name]: value }));
   };
 
   const handleSubmit = async () => {

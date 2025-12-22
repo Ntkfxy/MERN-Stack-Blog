@@ -19,19 +19,23 @@ const removeUser = () => {
 
 //เอาไปset in cookie
 const setUser = (user) => {
+  if (user) {
   cookie.set(
     "user",
     JSON.stringify({
-      id: user.id,
-      username: user.username,
-      accessToken: user.accessToken,
+      id: user?.id,
+      username: user?.username,
+      accessToken: user?.accessToken,
     }),
     {
       path: "/",
       expires: new Date(Date.now() + 24 * 60 * 60 * 1000), //24*60*60
     }
   );
-};
+} else {
+  removeUser();
+}
+}
 
 const TokenService = {
   getAccessToken,

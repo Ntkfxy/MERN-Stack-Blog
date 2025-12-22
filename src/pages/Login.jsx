@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import AuthService from "../service/authentication.service";
+import { UserContext } from "../context/UserContext";
 
 const Login = () => {
   const [user, setUser] = useState({
@@ -9,7 +10,14 @@ const Login = () => {
     password: "",
   });
 
-  const navigate = useNavigate();
+   const navigate = useNavigate();
+  const { userInfo, logIn } = useContext(UserContext);
+  useEffect(() => {
+    if (userInfo) {
+      navigate("/"); 
+    }
+  }, [userInfo, navigate]);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -17,25 +25,38 @@ const Login = () => {
   };
 
   const handleSubmit = async () => {
-    if (!user.username || !user.password) {
-      Swal.fire({
-        title: "Error",
-        icon: "error",
-        text: "Username or Password cannot be empty!",
-      });
-      return;
-    } else {
+    try {
+      if (!user.username || !user.password) {
+        Swal.fire({
+          title: "Error",
+          icon: "error",
+          text: "Username or Password cannot be empty!",
+        });
+        return;
+      }
+
       const response = await AuthService.login(user.username, user.password);
 
-      if (response?.status === 200) {
+      if (response.status === 200) {
         Swal.fire({
           icon: "success",
           title: "สมัครสำเร็จ",
-          text: response?.data?.message,
+          text: "",
         }).then(() => {
+          logIn({
+            id: response.data.id,
+            username: response.data.username,
+            accessToken: response.data.accessToken,
+          });
           navigate("/");
         });
       }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: error.message,
+      });
     }
   };
 
