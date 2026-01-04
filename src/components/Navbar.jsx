@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { UserContext } from "../context/UserContext";
+import { Link } from "react-router-dom";
 
 const NavBar = () => {
   const { userInfo, logOut } = useContext(UserContext);
@@ -9,24 +10,24 @@ const NavBar = () => {
     <div className="navbar bg-base-100 shadow-sm">
       {/* Navbar Start */}
       <div className="navbar-start">
-        <a href="/" className="btn btn-ghost text-xl">
+        <Link to="/" className="btn btn-ghost text-xl">
           SE NPRU Blog
-        </a>
+        </Link>
       </div>
 
       {/* Navbar End */}
       <div className="navbar-end space-x-3">
-        {!username ? (
+        {username ? (
           <>
-            <a
-              href="/create"
+            <Link
+              to="/create"
               className="btn btn-outline btn-primary rounded-xl"
             >
               Create New Post
-            </a>
+            </Link>
+
             <button
               onClick={logOut}
-              href="/login"
               className="btn btn-outline btn-error rounded-xl"
             >
               Logout ({username})
@@ -34,15 +35,19 @@ const NavBar = () => {
           </>
         ) : (
           <>
-            <a
-              href="/register"
+            <Link
+              to="/register"
               className="btn btn-outline btn-primary rounded-xl"
             >
               Register
-            </a>
-            <a href="/login" className="btn btn-outline btn-success rounded-xl">
+            </Link>
+
+            <Link
+              to="/login"
+              className="btn btn-outline btn-success rounded-xl"
+            >
               Login
-            </a>
+            </Link>
           </>
         )}
       </div>

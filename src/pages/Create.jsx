@@ -1,101 +1,53 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import ReactQuill from "react-quill";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import "react-quill/dist/quill.snow.css";
+import postService from "../service/posts.service.js";
 
 const Create = () => {
-  const [title, setTitle] = useState("");
-  const [summary, setSummary] = useState("");
-  const [content, setContent] = useState("");
-  const [currentUser, setCurrentUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
+  const [posts, setPosts] = useState({
+    title: "",
+    cover: "",
+    content: "",
+    summary: "",
+  });
 
+  const [isSaving, setIsSaving] = useState(false);
   const navigate = useNavigate();
 
-  // ✅ ตรวจสอบสิทธิ์ผู้ใช้
-  useEffect(() => {
-    try {
-      const user = JSON.parse(localStorage.getItem("currentUser"));
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setPosts((prev) => ({ ...prev, [name]: value }));
+  };
 
-      if (!user || user.role !== "owner") {
-        Swal.fire({
-          icon: "error",
-          title: "Access Denied",
-          text: "คุณไม่มีสิทธิ์สร้างโพสต์นี้",
-        }).then(() => navigate("/"));
-        return;
-      }
-
-      setCurrentUser(user);
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "เกิดข้อผิดพลาด",
-        text: "ไม่สามารถตรวจสอบข้อมูลผู้ใช้ได้",
-      }).then(() => navigate("/"));
-    } finally {
-      setLoading(false);
-    }
-  }, [navigate]);
-
-  // ✅ สร้างโพสต์
-  const handleCreatePost = async () => {
-    const isContentEmpty = content.replace(/<(.|\n)*?>/g, "").trim() === "";
-
-    if (!title || !summary || isContentEmpty) {
-      Swal.fire({
-        icon: "warning",
-        title: "กรุณากรอกข้อมูลให้ครบ",
-      });
-      return;
-    }
-
-    const newPost = {
-      title,
-      summary,
-      content,
-      author: currentUser.username,
-      date: new Date().toISOString(),
-    };
-
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setIsSaving(true);
 
     try {
-      const res = await fetch("http://localhost:3000/news", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newPost),
-      });
+      const response = await postService.createPost(posts);
+      if (response.status === 200) {
+        Swal.fire("เพิ่มโพสต์สำเร็จ", "Post added successfully", "success")
+          .then(() => navigate("/"));
 
-      if (!res.ok) throw new Error("ไม่สามารถบันทึกโพสต์ได้");
-
-      Swal.fire({
-        icon: "success",
-        title: "โพสต์ถูกบันทึกแล้ว!",
-        showConfirmButton: false,
-        timer: 1500,
-      }).then(() => navigate("/"));
+        setPosts({
+          title: "",
+          cover: "",
+          content: "",
+          summary: "",
+        });
+      }
     } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "เกิดข้อผิดพลาด",
-        text: error.message,
-      });
+      Swal.fire(
+        "เกิดข้อผิดพลาด",
+        error.message || "Something went wrong!",
+        "error"
+      );
     } finally {
       setIsSaving(false);
     }
   };
-
-  // ✅ Loading ตอนเช็ค user
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <span className="loading loading-spinner loading-lg"></span>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center p-4">
@@ -105,26 +57,30 @@ const Create = () => {
 
           <input
             type="text"
+            name="title"
             className="input input-bordered mt-4"
             placeholder="Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            value={posts.title}
+            onChange={handleChange}
           />
 
           <input
             type="text"
+            name="summary"
             className="input input-bordered mt-4"
             placeholder="Summary"
-            value={summary}
-            onChange={(e) => setSummary(e.target.value)}
+            value={posts.summary}
+            onChange={handleChange}
           />
 
           <p className="mt-4 font-semibold">Content</p>
 
           <ReactQuill
             theme="snow"
-            value={content}
-            onChange={setContent}
+            value={posts.content}
+            onChange={(value) =>
+              setPosts((prev) => ({ ...prev, content: value }))
+            }
             modules={{
               toolbar: [
                 [{ header: [1, 2, false] }],
@@ -148,10 +104,16 @@ const Create = () => {
           />
 
           {/* ยังไม่ผูก backend อัปโหลดไฟล์ */}
-          <input type="file" className="file-input file-input-bordered mt-4" />
+          <input
+            type="file"
+            className="file-input file-input-bordered mt-4"
+            onChange={(e) =>
+              setPosts((prev) => ({ ...prev, cover: e.target.files[0] }))
+            }
+          />
 
           <button
-            onClick={handleCreatePost}
+            onClick={handleSubmit}
             className="btn btn-primary w-full mt-6"
             disabled={isSaving}
           >
