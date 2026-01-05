@@ -11,7 +11,7 @@ const Edit = () => {
 
   const [posts, setPosts] = useState({
     title: "",
-    cover: "",
+    file: "",
     summary: "",
     content: "",
   });
@@ -109,7 +109,7 @@ const Edit = () => {
             type="file"
             className="file-input file-input-bordered mt-4"
             onChange={(e) =>
-              setPosts((prev) => ({ ...prev, cover: e.target.files[0] }))
+              setPosts((prev) => ({ ...prev, file: e.target.files[0] }))
             }
           />
 

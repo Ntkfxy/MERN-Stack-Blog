@@ -1,49 +1,59 @@
 import { useState } from "react";
-import ReactQuill from "react-quill";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import "react-quill/dist/quill.snow.css";
+import { Editor } from "@tinymce/tinymce-react";
 import postService from "../service/posts.service.js";
 
 const Create = () => {
-  const [posts, setPosts] = useState({
+  const [postDetail, setPostDetail] = useState({
     title: "",
-    cover: "",
     summary: "",
     content: "",
+    file: null,
   });
 
   const [isSaving, setIsSaving] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setPosts((prev) => ({ ...prev, [name]: value }));
+    const { name, value, files } = e.target;
+    setPostDetail((prev) => ({
+      ...prev,
+      [name]: files ? files[0] : value,
+    }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSaving(true);
+  const handleContentChange = (value) => {
+    setPostDetail((prev) => ({ ...prev, content: value }));
+  };
 
+  const handleSubmit = async () => {
     try {
-      const response = await postService.createPost(posts);
-      if (response.status === 200) {
-        Swal.fire("เพิ่มโพสต์สำเร็จ", "Post added successfully", "success")
-          .then(() => navigate("/"));
+      setIsSaving(true);
 
-        setPosts({
-          title: "",
-          cover: "",
-          content: "",
-          summary: "",
+      const data = new FormData();
+      data.set("title", postDetail.title);
+      data.set("summary", postDetail.summary);
+      data.set("content", postDetail.content);
+      data.set("file", postDetail.file);
+
+      const response = await postService.createPost(data);
+
+      if (response.status === 200) {
+        Swal.fire({
+          title: "Create Post",
+          text: "Create post successfully",
+          icon: "success",
+        }).then(() => {
+          navigate("/");
         });
       }
     } catch (error) {
-      Swal.fire(
-        "เกิดข้อผิดพลาด",
-        error.message || "Something went wrong!",
-        "error"
-      );
+      Swal.fire({
+        title: "Create Post",
+        icon: "error",
+        text: error?.response?.data?.message || error.message,
+      });
     } finally {
       setIsSaving(false);
     }
@@ -60,7 +70,7 @@ const Create = () => {
             name="title"
             className="input input-bordered mt-4"
             placeholder="Title"
-            value={posts.title}
+            value={postDetail.title}
             onChange={handleChange}
           />
 
@@ -69,47 +79,27 @@ const Create = () => {
             name="summary"
             className="input input-bordered mt-4"
             placeholder="Summary"
-            value={posts.summary}
+            value={postDetail.summary}
             onChange={handleChange}
           />
 
-          <p className="mt-4 font-semibold">Content</p>
-
-          <ReactQuill
-            theme="snow"
-            value={posts.content}
-            onChange={(value) =>
-              setPosts((prev) => ({ ...prev, content: value }))
-            }
-            modules={{
-              toolbar: [
-                [{ header: [1, 2, false] }],
-                ["bold", "italic", "underline"],
-                [{ list: "ordered" }, { list: "bullet" }],
-                ["link", "image"],
-                ["clean"],
-              ],
+          <Editor
+            value={postDetail.content}
+            onEditorChange={handleContentChange}
+            init={{
+              height: 300,
+              menubar: false,
+              plugins: "link image lists code",
+              toolbar:
+                "undo redo | bold italic | alignleft aligncenter alignright | bullist numlist | code",
             }}
-            formats={[
-              "header",
-              "bold",
-              "italic",
-              "underline",
-              "list",
-              "bullet",
-              "link",
-              "image",
-            ]}
-            style={{ height: "300px", marginBottom: "2rem" }}
           />
 
-          {/* ยังไม่ผูก backend อัปโหลดไฟล์ */}
           <input
             type="file"
+            name="file"
             className="file-input file-input-bordered mt-4"
-            onChange={(e) =>
-              setPosts((prev) => ({ ...prev, cover: e.target.files[0] }))
-            }
+            onChange={handleChange}
           />
 
           <button

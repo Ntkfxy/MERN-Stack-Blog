@@ -12,7 +12,7 @@ const PostDetail = () => {
     createdAt: "",
     author: {},
     content: "",
-    cover: "",
+    file: "",
   });
 
   const userInfo = JSON.parse(localStorage.getItem("userInfo")); 
@@ -38,7 +38,7 @@ const PostDetail = () => {
   return (
     <div className="card lg:card-side bg-base-100 shadow-sm">
       <figure>
-        <img src={post.cover || "/default-cover.jpg"} alt={post.title} />
+        <img src={post.file || "/default-cover.jpg"} alt={post.title} />
       </figure>
 
       <div className="card-body">

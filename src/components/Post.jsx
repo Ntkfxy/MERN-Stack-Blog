@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-const Post = ({ title, cover, author, createdAt, summary, _id, index = 0 }) => {
+const Post = ({ title, file, author, createdAt, summary, _id, index = 0 }) => {
   const isEven = index % 2 === 0;
   return (
     <a
@@ -11,7 +11,7 @@ const Post = ({ title, cover, author, createdAt, summary, _id, index = 0 }) => {
       key={_id}
     >
       <figure className="md:1/2 flex items-center justify-center ">
-        <img src={cover} alt={title} className="w-64 h-full object-cover" />
+        <img src={file} alt={title} className="w-64 h-full object-cover" />
       </figure>
 
       <div className="card-body">
