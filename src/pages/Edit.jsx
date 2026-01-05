@@ -12,14 +12,14 @@ const Edit = () => {
   const [posts, setPosts] = useState({
     title: "",
     cover: "",
-    content: "",
     summary: "",
+    content: "",
   });
 
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await postService.getPostById(id);
+        const response = await postService.getById(id);
         if (response.status === 200) {
           setPosts(response.data);
         } else {
@@ -41,7 +41,7 @@ const Edit = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await postService.editPostById(id, posts);
+      const response = await postService.updatePost(id, posts);
       if (response.status === 200) {
         Swal.fire("Post Updated", "Successfully updated post.", "success")
           .then(() => navigate("/"));

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Post from "../components/Post.jsx";
 import postService from "../service/posts.service.js";
 import Swal from "sweetalert2";

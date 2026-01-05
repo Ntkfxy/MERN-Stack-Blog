@@ -21,7 +21,7 @@ const Post = ({ title, cover, author, createdAt, summary, _id, index = 0 }) => {
 
         <div className="card-actions justify-between items-center">
           <div className="badge badge-primary badge-outline">
-            {author.username} {createdAt}
+            {author?.username || "ไม่ทราบผู้เขียน"} · {createdAt}
           </div>
         </div>
       </div>

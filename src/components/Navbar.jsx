@@ -1,56 +1,72 @@
 import { useContext } from "react";
+// import { Link } from "react-router-dom"; // ✅ ต้อง import Link
 import { UserContext } from "../context/UserContext";
-import { Link } from "react-router-dom";
 
 const NavBar = () => {
   const { userInfo, logOut } = useContext(UserContext);
   const username = userInfo?.username;
-
   return (
-    <div className="navbar bg-base-100 shadow-sm">
-      {/* Navbar Start */}
+    <div className="navbar bg-base-100 shadow-sm ">
       <div className="navbar-start">
-        <Link to="/" className="btn btn-ghost text-xl">
-          SE NPRU Blog
-        </Link>
+        <div className="dropdown">
+          <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              {" "}
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h8m-8 6h16"
+              />{" "}
+            </svg>
+          </div>
+          {/* <ul
+            tabIndex="-1"
+            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+          >
+            {menuItems.map((item) => (
+              <li>
+                <a href={item.link}>{item.text}</a>
+              </li>
+            ))}
+          </ul> */}
+        </div>
+        <a className="btn btn-ghost text-xl">SE NPRU Blog</a>
       </div>
-
-      {/* Navbar End */}
-      <div className="navbar-end space-x-3">
-        {username ? (
-          <>
-            <Link
-              to="/create"
-              className="btn btn-outline btn-primary rounded-xl"
-            >
-              Create New Post
-            </Link>
-
-            <button
-              onClick={logOut}
-              className="btn btn-outline btn-error rounded-xl"
-            >
-              Logout ({username})
-            </button>
-          </>
-        ) : (
-          <>
-            <Link
-              to="/register"
-              className="btn btn-outline btn-primary rounded-xl"
-            >
-              Register
-            </Link>
-
-            <Link
-              to="/login"
-              className="btn btn-outline btn-success rounded-xl"
-            >
-              Login
-            </Link>
-          </>
-        )}
+      <div className="navbar-center hidden lg:flex">
+        {/* <ul className="menu menu-horizontal px-1">
+          {menuItems.map((item) => (
+            <li>
+              <a href={item.link}>{item.text}</a>
+            </li>
+          ))}
+        </ul> */}
       </div>
+      {username ? (
+        <div className="navbar-end space-x-2">
+          <a className="btn" href="/login">
+            Create a new post
+          </a>
+          <button className="btn" href="/register" onClick={logOut}>
+            Logout ({username})
+          </button>
+        </div>
+      ) : (
+        <div className="navbar-end space-x-2">
+          <a className="btn" href="/login">
+            Login
+          </a>
+          <a className="btn" href="/register">
+            Register
+          </a>
+        </div>
+      )}
     </div>
   );
 };

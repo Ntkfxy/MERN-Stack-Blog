@@ -9,8 +9,8 @@ const Create = () => {
   const [posts, setPosts] = useState({
     title: "",
     cover: "",
-    content: "",
     summary: "",
+    content: "",
   });
 
   const [isSaving, setIsSaving] = useState(false);

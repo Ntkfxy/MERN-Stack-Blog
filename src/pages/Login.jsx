@@ -9,39 +9,33 @@ const Login = () => {
     username: "",
     password: "",
   });
-
-   const navigate = useNavigate();
-  const { userInfo, logIn } = useContext(UserContext);
+  const { logIn, userInfo } = useContext(UserContext);
+  const navigate = useNavigate();
   useEffect(() => {
     if (userInfo) {
-      navigate("/"); 
+      navigate("/");
     }
   }, [userInfo, navigate]);
 
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const handleChange = (event) => {
+    const { name, value } = event.target;
     setUser((user) => ({ ...user, [name]: value }));
   };
-
   const handleSubmit = async () => {
-    try {
-      if (!user.username || !user.password) {
-        Swal.fire({
-          title: "Error",
-          icon: "error",
-          text: "Username or Password cannot be empty!",
-        });
-        return;
-      }
-
+    if (!user.username || !user.password) {
+      Swal.fire({
+        title: "Error",
+        text: "Username or Password cannot be empty!",
+        icon: "error",
+      });
+    } else {
       const response = await AuthService.login(user.username, user.password);
-
-      if (response.status === 200) {
+      // console.log(response);
+      if (response?.status === 200) {
         Swal.fire({
+          title: "Success",
+          text: response?.data?.message,
           icon: "success",
-          title: "สมัครสำเร็จ",
-          text: "",
         }).then(() => {
           logIn({
             id: response.data.id,
@@ -51,15 +45,8 @@ const Login = () => {
           navigate("/");
         });
       }
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "เกิดข้อผิดพลาด",
-        text: error.message,
-      });
     }
   };
-
   return (
     <div>
       <div className="card w-full max-w-md p-8 bg-white shadow-xl rounded-2xl border border-purple-200">
