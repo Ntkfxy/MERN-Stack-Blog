@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import { Editor } from "@tinymce/tinymce-react";
+import Editor from "../components/Editor";
 import postService from "../service/post.service.js";
 
 const Create = () => {
@@ -44,9 +44,7 @@ const Create = () => {
           title: "Create Post",
           text: "Create post successfully",
           icon: "success",
-        }).then(() => {
-          navigate("/");
-        });
+        }).then(() => navigate("/"));
       }
     } catch (error) {
       Swal.fire({
@@ -85,14 +83,7 @@ const Create = () => {
 
           <Editor
             value={postDetail.content}
-            onEditorChange={handleContentChange}
-            init={{
-              height: 300,
-              menubar: false,
-              plugins: "link image lists code",
-              toolbar:
-                "undo redo | bold italic | alignleft aligncenter alignright | bullist numlist | code",
-            }}
+            onChange={handleContentChange}
           />
 
           <input
