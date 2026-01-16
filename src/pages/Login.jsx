@@ -70,15 +70,13 @@ const Login = () => {
 
   return (
     // 🎯 จัดกึ่งกลางหน้าจอ
-    <div className="min-h-screen flex items-center justify-center bg-base-200">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-500 to-purple-500">
       <form
         onSubmit={handleLogin}
         className="card w-full max-w-sm bg-base-100 shadow-xl"
       >
         <div className="card-body space-y-4">
-          <h2 className="text-center text-2xl font-bold">
-            Login 🔐
-          </h2>
+          <h2 className="text-center text-2xl font-bold">Login 🔐</h2>
 
           <input
             type="text"

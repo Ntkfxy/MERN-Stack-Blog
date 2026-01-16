@@ -81,10 +81,7 @@ const Create = () => {
             onChange={handleChange}
           />
 
-          <Editor
-            value={postDetail.content}
-            onChange={handleContentChange}
-          />
+          <Editor value={postDetail.content} onChange={handleContentChange} />
 
           <input
             type="file"

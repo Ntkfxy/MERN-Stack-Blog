@@ -14,7 +14,7 @@ const getUser = () => {
   if (!user) return null;
 
   try {
-    // ⭐ decode + parse ให้เป็น object จริง
+    //  decode + parse ให้เป็น object จริง
     const decoded = decodeURIComponent(user);
     return JSON.parse(decoded);
   } catch (err) {
@@ -22,7 +22,6 @@ const getUser = () => {
     return null;
   }
 };
-
 
 /**
  * 📌 ดึง accessToken จาก user
