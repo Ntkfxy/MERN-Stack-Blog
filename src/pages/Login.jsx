@@ -1,112 +1,116 @@
 import { useState, useContext, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
 import AuthService from "../service/authentication.service";
 import { UserContext } from "../context/UserContext";
 
 const Login = () => {
-  const [user, setUser] = useState({
-    username: "",
-    password: "",
-  });
-  const { logIn, userInfo } = useContext(UserContext);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { userInfo, logIn } = useContext(UserContext);
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  // ✅ แจ้งเตือนหลังสมัครสมาชิกสำเร็จ
   useEffect(() => {
-    if (userInfo) {
+    if (location.state?.registered) {
+      Swal.fire({
+        icon: "success",
+        title: "สมัครสมาชิกสำเร็จ 🎉",
+        text: "กรุณาเข้าสู่ระบบ",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    }
+  }, [location.state]);
+
+  // 🔁 ถ้า login อยู่แล้ว ไม่ต้องเข้าหน้า login
+  useEffect(() => {
+    if (userInfo?.accessToken) {
       navigate("/");
     }
   }, [userInfo, navigate]);
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setUser((user) => ({ ...user, [name]: value }));
-  };
-  const handleSubmit = async () => {
-    if (!user.username || !user.password) {
-      Swal.fire({
-        title: "Error",
-        text: "Username or Password cannot be empty!",
-        icon: "error",
-      });
-    } else {
-      const response = await AuthService.login(user.username, user.password);
-      // console.log(response);
-      if (response?.status === 200) {
-        Swal.fire({
-          title: "Success",
-          text: response?.data?.message,
-          icon: "success",
-        }).then(() => {
-          logIn({
-            id: response.data.id,
-            username: response.data.username,
-            accessToken: response.data.accessToken,
-          });
-          navigate("/");
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    if (!username || !password) {
+      Swal.fire("Error", "กรุณากรอกข้อมูลให้ครบ", "error");
+      return;
+    }
+
+    try {
+      const res = await AuthService.login(username, password);
+
+      if (res.status === 200) {
+        logIn({
+          id: res.data.id,
+          username: res.data.username,
+          accessToken: res.data.accessToken,
         });
+
+        Swal.fire({
+          icon: "success",
+          title: "เข้าสู่ระบบสำเร็จ",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+
+        navigate("/");
       }
+    } catch (err) {
+      Swal.fire(
+        "Login failed",
+        err?.response?.data?.message || "Username หรือ Password ไม่ถูกต้อง",
+        "error"
+      );
     }
   };
-  return (
-    <div>
-      <div className="card w-full max-w-md p-8 bg-white shadow-xl rounded-2xl border border-purple-200">
-        <h2 className="text-3xl font-bold mb-8 text-center text-purple-700">
-          Login
-        </h2>
 
-        {/* Username */}
-        <div className="form-control mb-6">
-          <label className="label">
-            <span className="label-text font-semibold text-purple-600">
-              Username
-            </span>
-          </label>
+  return (
+    // 🎯 จัดกึ่งกลางหน้าจอ
+    <div className="min-h-screen flex items-center justify-center bg-base-200">
+      <form
+        onSubmit={handleLogin}
+        className="card w-full max-w-sm bg-base-100 shadow-xl"
+      >
+        <div className="card-body space-y-4">
+          <h2 className="text-center text-2xl font-bold">
+            Login 🔐
+          </h2>
+
           <input
             type="text"
-            name="username"
-            placeholder="Enter your username"
-            className="input input-bordered w-full rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-purple-400 shadow-sm"
-            value={user.username}
-            onChange={handleChange}
+            placeholder="Username"
+            className="input input-bordered w-full"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
           />
-        </div>
 
-        {/* Password */}
-        <div className="form-control mb-6">
-          <label className="label">
-            <span className="label-text font-semibold text-purple-600">
-              Password
-            </span>
-          </label>
           <input
             type="password"
-            name="password"
-            placeholder="Enter your password"
-            className="input input-bordered w-full rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-purple-400 shadow-sm"
-            value={user.password}
-            onChange={handleChange}
+            placeholder="Password"
+            className="input input-bordered w-full"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
+
+          <button type="submit" className="btn btn-success w-full">
+            Login
+          </button>
+
+          <p className="text-center text-sm text-gray-500">
+            ยังไม่มีบัญชี?
+            <span
+              className="ml-1 link link-primary"
+              onClick={() => navigate("/register")}
+            >
+              สมัครสมาชิก
+            </span>
+          </p>
         </div>
-
-        {/* Submit Button */}
-        <button
-          onClick={handleSubmit}
-          className="btn btn-primary w-full bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-lg py-2 transition-transform transform hover:scale-105 shadow-md"
-        >
-          Login
-        </button>
-
-        {/* Optional: link to register */}
-        <p className="mt-4 text-center text-sm text-gray-500">
-          Don't have an account?{" "}
-          <span
-            className="text-purple-600 hover:underline cursor-pointer"
-            onClick={() => navigate("/register")}
-          >
-            Register
-          </span>
-        </p>
-      </div>
+      </form>
     </div>
   );
 };

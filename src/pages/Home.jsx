@@ -1,34 +1,34 @@
-import { useState, useEffect } from "react";
-import Post from "../components/Post.jsx";
-import postService from "../service/posts.service.js";
+import React, { useState, useEffect } from "react";
+import Post from "../components/Post";
+import PostService from "../service/post.service";
 import Swal from "sweetalert2";
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
-
   useEffect(() => {
-    const getAllPosts = async () => {
+    const fetchAllPost = async () => {
       try {
-        const response = await postService.getAllPosts();
+        const response = await PostService.getAllPosts();
         if (response.status === 200) {
           setPosts(response.data);
         }
       } catch (error) {
         Swal.fire({
-          title: "Get All Posts",
+          title: "Home",
+          text: error?.response?.data?.message || error?.message,
           icon: "error",
-          text: error?.response?.data?.message || error.message,
         });
       }
     };
-    getAllPosts();
+    fetchAllPost();
   }, []);
-
   return (
     <div className="space-y-4">
       {posts.length > 0 &&
-        posts.map((post, index) => <Post key={index} postDetail={post} />)}
-      {posts.length === 0 && <h1> No Post </h1>}
+        posts.map((post, index) => (
+          <Post key={index} index={index} {...post} />
+        ))}
+      {posts.length === 0 && <h1> No post </h1>}
     </div>
   );
 };

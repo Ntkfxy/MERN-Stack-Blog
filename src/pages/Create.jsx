@@ -2,7 +2,7 @@ import { useState } from "react";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { Editor } from "@tinymce/tinymce-react";
-import postService from "../service/posts.service.js";
+import postService from "../service/post.service.js";
 
 const Create = () => {
   const [postDetail, setPostDetail] = useState({

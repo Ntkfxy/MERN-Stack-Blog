@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import DOMPurify from "dompurify";
-import postService from "../service/posts.service";
+import postService from "../service/post.service";
 import Swal from "sweetalert2";
 
 const PostDetail = () => {

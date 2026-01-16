@@ -1,70 +1,44 @@
 import { useContext } from "react";
-// import { Link } from "react-router-dom"; // ✅ ต้อง import Link
+import { Link } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 
 const NavBar = () => {
+  // ดึงข้อมูล user และฟังก์ชัน logout จาก context
   const { userInfo, logOut } = useContext(UserContext);
+console.log("userInfo from context:", userInfo);
+
+  // ถ้ามี user → แสดงชื่อ
   const username = userInfo?.username;
+
   return (
-    <div className="navbar bg-base-100 shadow-sm ">
+    <div className="navbar bg-base-100 shadow-sm">
+      {/* โลโก้ */}
       <div className="navbar-start">
-        <div className="dropdown">
-          <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              {" "}
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h8m-8 6h16"
-              />{" "}
-            </svg>
-          </div>
-          {/* <ul
-            tabIndex="-1"
-            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
-          >
-            {menuItems.map((item) => (
-              <li>
-                <a href={item.link}>{item.text}</a>
-              </li>
-            ))}
-          </ul> */}
-        </div>
-        <a className="btn btn-ghost text-xl">SE NPRU Blog</a>
+        <Link className="btn btn-ghost text-xl" to="/">
+          SE NPRU Blog
+        </Link>
       </div>
-      <div className="navbar-center hidden lg:flex">
-        {/* <ul className="menu menu-horizontal px-1">
-          {menuItems.map((item) => (
-            <li>
-              <a href={item.link}>{item.text}</a>
-            </li>
-          ))}
-        </ul> */}
-      </div>
+
+      {/* ถ้า login แล้ว */}
       {username ? (
         <div className="navbar-end space-x-2">
-          <a className="btn" href="/login">
+          <Link className="btn" to="/create">
             Create a new post
-          </a>
-          <button className="btn" href="/register" onClick={logOut}>
+          </Link>
+
+          <button className="btn" onClick={logOut}>
             Logout ({username})
           </button>
         </div>
       ) : (
+        // ถ้ายังไม่ login
         <div className="navbar-end space-x-2">
-          <a className="btn" href="/login">
+          <Link className="btn" to="/login">
             Login
-          </a>
-          <a className="btn" href="/register">
+          </Link>
+          <Link className="btn" to="/register">
             Register
-          </a>
+          </Link>
         </div>
       )}
     </div>

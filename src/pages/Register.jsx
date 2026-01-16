@@ -1,76 +1,108 @@
-import { useState, useEffect, useContext } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AuthService from "../service/authentication.service";
-import { UserContext } from "../context/UserContext";
 import Swal from "sweetalert2";
-const Register = () => {
-  const [user, setUser] = useState({
-    username: "",
-    password: "",
-  });
-  const navigate = useNavigate();
-  const { userInfo } = useContext(UserContext);
-  useEffect(() => {
-    if (userInfo) {
-      navigate("/");
-    }
-  }, [userInfo, navigate]);
+import AuthService from "../service/authentication.service";
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setUser((user) => ({ ...user, [name]: value }));
-  };
-  const handleSubmit = async () => {
-    if (!user.username || !user.password) {
+const Register = () => {
+  const navigate = useNavigate();
+
+  // state สำหรับฟอร์ม
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // เมื่อกด Register
+  const handleRegister = async (e) => {
+    e.preventDefault();
+
+    // ตรวจสอบค่าว่าง
+    if (!username || !password) {
       Swal.fire({
-        title: "Error",
-        text: "Username or Password cannot be empty!",
         icon: "error",
+        title: "ข้อมูลไม่ครบ",
+        text: "กรุณากรอก Username และ Password",
       });
-    } else {
-      const response = await AuthService.register(user.username, user.password);
-      // console.log(response);
-      if (response?.status === 201) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await AuthService.register(username, password);
+
+      if (res.status === 201) {
         Swal.fire({
-          title: "Success",
-          text: response?.data?.message,
           icon: "success",
+          title: "สมัครสมาชิกสำเร็จ 🎉",
+          text: "กรุณาเข้าสู่ระบบ",
+          confirmButtonText: "ไปหน้า Login",
         }).then(() => {
           navigate("/login");
         });
       }
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Register failed",
+        text: err?.response?.data?.message || "Something went wrong",
+      });
+    } finally {
+      setLoading(false);
     }
   };
+
   return (
-    <div className="card bg-base-100 w-96 shadow-sm">
-      <div className="card-body space-y-2">
-        <h2 className="card-title">Register</h2>
-        <label className="input input-bordered flex items-center gap-2">
-          Username
+    // ⭐ container ให้อยู่กลางจอ
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-500 to-purple-500">
+      <form
+        onSubmit={handleRegister}
+        className="card w-96 bg-base-100 shadow-xl"
+      >
+        <div className="card-body space-y-4">
+          <h2 className="card-title justify-center text-2xl">
+            Register
+          </h2>
+
+          {/* Username */}
           <input
             type="text"
-            className="grow"
-            placeholder="username"
-            name="username"
-            onChange={handleChange}
-            value={user.username}
+            placeholder="Username"
+            className="input input-bordered w-full"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
           />
-        </label>
-        <label className="input input-bordered flex items-center gap-2">
-          Password
+
+          {/* Password */}
           <input
             type="password"
-            className="grow"
-            placeholder="*****"
-            name="password"
-            value={user.password}
-            onChange={handleChange}
+            placeholder="Password"
+            className="input input-bordered w-full"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
-        </label>
-        <button className="btn btn-soft btn-success" onClick={handleSubmit}>
-          Register
-        </button>
-      </div>
+
+          {/* ปุ่ม Register */}
+          <button
+            type="submit"
+            className={`btn btn-success w-full ${
+              loading ? "btn-disabled" : ""
+            }`}
+          >
+            {loading ? "Registering..." : "Register"}
+          </button>
+
+          {/* ลิงก์ไป Login */}
+          <p className="text-center text-sm">
+            มีบัญชีอยู่แล้ว?{" "}
+            <span
+              className="link link-primary cursor-pointer"
+              onClick={() => navigate("/login")}
+            >
+              Login
+            </span>
+          </p>
+        </div>
+      </form>
     </div>
   );
 };

@@ -3,7 +3,7 @@ import ReactQuill from "react-quill";
 import Swal from "sweetalert2";
 import { useParams, useNavigate } from "react-router-dom";
 import "react-quill/dist/quill.snow.css";
-import postService from "../service/posts.service.js";
+import postService from "../service/post.service.js";
 
 const Edit = () => {
   const { id } = useParams();
