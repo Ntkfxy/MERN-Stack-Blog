@@ -6,16 +6,13 @@ import AuthService from "../service/authentication.service";
 const Register = () => {
   const navigate = useNavigate();
 
-  // state สำหรับฟอร์ม
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // เมื่อกด Register
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    // ตรวจสอบค่าว่าง
     if (!username || !password) {
       Swal.fire({
         icon: "error",
@@ -33,7 +30,7 @@ const Register = () => {
       if (res.status === 201) {
         Swal.fire({
           icon: "success",
-          title: "สมัครสมาชิกสำเร็จ 🎉",
+          title: "สมัครสมาชิกสำเร็จ",
           text: "กรุณาเข้าสู่ระบบ",
           confirmButtonText: "ไปหน้า Login",
         }).then(() => {
@@ -52,54 +49,69 @@ const Register = () => {
   };
 
   return (
-    // ⭐ container ให้อยู่กลางจอ
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-500 to-purple-500">
+    // ⭐ container จัดกลางจอ (เหมือน Login)
+    
+  <div className="min-h-screen flex items-center justify-center px-4">
       <form
         onSubmit={handleRegister}
-        className="card w-96 bg-base-100 shadow-xl"
+        className="w-full max-w-sm bg-base-100 border border-base-300 rounded-2xl shadow-md"
       >
-        <div className="card-body space-y-4">
-          <h2 className="card-title justify-center text-2xl">
-            Register
-          </h2>
+        <div className="p-8 space-y-6">
+          {/* Title */}
+          <header className="text-center space-y-2">
+            <h1 className="text-3xl font-bold text-base-content">
+              สมัครสมาชิก
+            </h1>
+            <p className="text-sm text-base-content/60">
+              สร้างบัญชีเพื่อเริ่มใช้งาน
+            </p>
+          </header>
 
           {/* Username */}
-          <input
-            type="text"
-            placeholder="Username"
-            className="input input-bordered w-full"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text font-medium">Username</span>
+            </label>
+            <input
+              type="text"
+              className="input input-bordered"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
 
           {/* Password */}
-          <input
-            type="password"
-            placeholder="Password"
-            className="input input-bordered w-full"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text font-medium">Password</span>
+            </label>
+            <input
+              type="password"
+              className="input input-bordered"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
 
-          {/* ปุ่ม Register */}
+          {/* Button */}
           <button
             type="submit"
-            className={`btn btn-success w-full ${
-              loading ? "btn-disabled" : ""
-            }`}
+            disabled={loading}
+            className="btn btn-primary w-full"
           >
             {loading ? "Registering..." : "Register"}
           </button>
 
-          {/* ลิงก์ไป Login */}
-          <p className="text-center text-sm">
-            มีบัญชีอยู่แล้ว?{" "}
-            <span
-              className="link link-primary cursor-pointer"
+          {/* Login link */}
+          <p className="text-center text-sm text-base-content/60">
+            มีบัญชีอยู่แล้ว?
+            <button
+              type="button"
               onClick={() => navigate("/login")}
+              className="ml-1 font-medium text-primary hover:underline"
             >
-              Login
-            </span>
+              เข้าสู่ระบบ
+            </button>
           </p>
         </div>
       </form>

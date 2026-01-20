@@ -12,12 +12,11 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  // ✅ แจ้งเตือนหลังสมัครสมาชิกสำเร็จ
   useEffect(() => {
     if (location.state?.registered) {
       Swal.fire({
         icon: "success",
-        title: "สมัครสมาชิกสำเร็จ 🎉",
+        title: "สมัครสมาชิกสำเร็จ",
         text: "กรุณาเข้าสู่ระบบ",
         timer: 2000,
         showConfirmButton: false,
@@ -25,7 +24,6 @@ const Login = () => {
     }
   }, [location.state]);
 
-  // 🔁 ถ้า login อยู่แล้ว ไม่ต้องเข้าหน้า login
   useEffect(() => {
     if (userInfo?.accessToken) {
       navigate("/");
@@ -36,23 +34,22 @@ const Login = () => {
     e.preventDefault();
 
     if (!username || !password) {
-      Swal.fire("Error", "กรุณากรอกข้อมูลให้ครบ", "error");
+      Swal.fire({
+        icon: "error",
+        text: "กรุณากรอกข้อมูลให้ครบ",
+      });
       return;
     }
 
     try {
       const res = await AuthService.login(username, password);
 
-      if (res.status === 200) {
-        logIn({
-          id: res.data.id,
-          username: res.data.username,
-          accessToken: res.data.accessToken,
-        });
+      if (res?.accessToken) {
+        logIn(res);
 
         Swal.fire({
           icon: "success",
-          title: "เข้าสู่ระบบสำเร็จ",
+          text: "เข้าสู่ระบบสำเร็จ",
           timer: 1500,
           showConfirmButton: false,
         });
@@ -60,52 +57,75 @@ const Login = () => {
         navigate("/");
       }
     } catch (err) {
-      Swal.fire(
-        "Login failed",
-        err?.response?.data?.message || "Username หรือ Password ไม่ถูกต้อง",
-        "error"
-      );
+      Swal.fire({
+        icon: "error",
+        title: "Login failed",
+        text:
+          err?.response?.data?.message ||
+          "Username หรือ Password ไม่ถูกต้อง",
+      });
     }
   };
 
   return (
-    // 🎯 จัดกึ่งกลางหน้าจอ
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-500 to-purple-500">
+    // ⭐ Container จัดกลางจอ
+  <div className="min-h-screen flex items-center justify-center px-4">
       <form
         onSubmit={handleLogin}
-        className="card w-full max-w-sm bg-base-100 shadow-xl"
+        className="w-full max-w-sm bg-base-100 border border-base-300 rounded-2xl shadow-md"
       >
-        <div className="card-body space-y-4">
-          <h2 className="text-center text-2xl font-bold">Login 🔐</h2>
+        <div className="p-8 space-y-6">
+          {/* Title */}
+          <header className="text-center space-y-2">
+            <h1 className="text-3xl font-bold text-base-content">
+              เข้าสู่ระบบ
+            </h1>
+            <p className="text-sm text-base-content/60">
+              กรุณาเข้าสู่ระบบเพื่อใช้งาน
+            </p>
+          </header>
 
-          <input
-            type="text"
-            placeholder="Username"
-            className="input input-bordered w-full"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
+          {/* Username */}
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text font-medium">Username</span>
+            </label>
+            <input
+              type="text"
+              className="input input-bordered"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
 
-          <input
-            type="password"
-            placeholder="Password"
-            className="input input-bordered w-full"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          {/* Password */}
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text font-medium">Password</span>
+            </label>
+            <input
+              type="password"
+              className="input input-bordered"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
 
-          <button type="submit" className="btn btn-success w-full">
+          {/* Button */}
+          <button type="submit" className="btn btn-primary w-full">
             Login
           </button>
 
-          <p className="text-center text-sm text-gray-500">
+          {/* Register */}
+          <p className="text-center text-sm text-base-content/60">
             ยังไม่มีบัญชี?
-            <span
-              className="ml-1 link link-primary"
+            <button
+              type="button"
               onClick={() => navigate("/register")}
+              className="ml-1 font-medium text-primary hover:underline"
             >
               สมัครสมาชิก
-            </span>
+            </button>
           </p>
         </div>
       </form>

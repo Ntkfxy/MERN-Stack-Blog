@@ -1,36 +1,41 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import "quill/dist/quill.snow.css";
 
 const Editor = forwardRef(({ value, onChange }, ref) => {
+  // เก็บ reference ของ ReactQuill
   const quillRef = useRef(null);
 
+  // expose method ให้ component แม่เรียกใช้งาน editor ได้
   useImperativeHandle(ref, () => ({
     getQuill: () => quillRef.current?.getEditor(),
   }));
 
+  // toolbar configuration
   const toolbarOptions = [
-    ["bold", "italic", "underline", "strike"], // toggled buttons
+    ["bold", "italic", "underline", "strike"],
     ["blockquote", "code-block"],
-    ["link", "image", "video", "formula"],
+    ["link", "image", "video"],
 
-    [{ header: 1 }, { header: 2 }], // custom button values
-    [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
-    [{ script: "sub" }, { script: "super" }], // superscript/subscript
-    [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
-    [{ direction: "rtl" }], // text direction
+    [{ header: 1 }, { header: 2 }],
+    [{ list: "ordered" }, { list: "bullet" }],
+    [{ script: "sub" }, { script: "super" }],
+    [{ indent: "-1" }, { indent: "+1" }],
+    [{ direction: "rtl" }],
 
-    [{ size: ["small", false, "large", "huge"] }], // custom dropdown
+    [{ size: ["small", false, "large", "huge"] }],
     [{ header: [1, 2, 3, 4, 5, 6, false] }],
 
-    [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+    [{ color: [] }, { background: [] }],
     [{ font: [] }],
     [{ align: [] }],
 
-    ["clean"], // remove formatting button
+    ["clean"],
   ];
 
-  const modules = { toolbar: toolbarOptions };
+  const modules = {
+    toolbar: toolbarOptions,
+  };
 
   return (
     <ReactQuill
@@ -39,10 +44,11 @@ const Editor = forwardRef(({ value, onChange }, ref) => {
       value={value}
       onChange={onChange}
       modules={modules}
-      // formats={formats}
       style={{ height: "300px", marginBottom: "2rem" }}
     />
   );
 });
+
+Editor.displayName = "Editor";
 
 export default Editor;

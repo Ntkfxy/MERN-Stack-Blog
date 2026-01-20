@@ -1,68 +1,72 @@
 import { Cookies } from "react-cookie";
 
-// สร้าง instance สำหรับจัดการ cookie
-const cookie = new Cookies();
+// =========================
+// 📦 สร้าง instance cookie
+// =========================
+const cookies = new Cookies();
 
 /**
+ * =========================
  * 📌 อ่านข้อมูล user จาก cookie
- * - cookie จะเก็บเป็น string
- * - ต้อง parse JSON ก่อนใช้งาน
+ * =========================
+ * - cookie เก็บเป็น string
+ * - ต้อง JSON.parse ก่อนใช้งาน
+ * - ถ้า parse พัง → ลบ cookie ทิ้ง
  */
 const getUser = () => {
-  const user = cookie.get("user");
-
-  if (!user) return null;
-
-  try {
-    //  decode + parse ให้เป็น object จริง
-    const decoded = decodeURIComponent(user);
-    return JSON.parse(decoded);
-  } catch (err) {
-    console.error("Cannot parse user cookie", err);
-    return null;
-  }
+  const user = cookies.get("user");
+  return user;
 };
-
 /**
- * 📌 ดึง accessToken จาก user
- * ใช้สำหรับแนบไปกับ API request
+ * =========================
+ * 📌 ดึง accessToken
+ * =========================
+ * - ใช้แนบ Authorization header
+ * - ถ้าไม่มี → return string ว่าง
  */
 const getAccessToken = () => {
   const user = getUser();
-  return user?.accessToken;
+  return user?.accessToken || "";
 };
 
 /**
- * 📌 บันทึกข้อมูล user ลง cookie
- * - เรียกตอน login สำเร็จ
+ * =========================
+ * 📌 บันทึก user ลง cookie
+ * =========================
+ * - เรียกหลัง login สำเร็จ
+ * - เก็บเฉพาะข้อมูลจำเป็น
+ * - อายุ cookie 1 วัน
  */
 const setUser = (user) => {
-  // ถ้าไม่มี user → ลบ cookie
   if (!user) return removeUser();
 
-  cookie.set(
+  cookies.set(
     "user",
     JSON.stringify({
-      id: user.id,
+      id: user.id || user._id,
       username: user.username,
       accessToken: user.accessToken,
     }),
     {
-      path: "/", // ใช้ได้ทุกหน้า
-      expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // หมดอายุใน 1 วัน
+      path: "/",
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     }
   );
 };
 
 /**
- * 📌 ลบข้อมูล user ออกจาก cookie
+ * =========================
+ * 📌 ลบ user ออกจาก cookie
+ * =========================
  * - เรียกตอน logout
  */
 const removeUser = () => {
-  cookie.remove("user", { path: "/" });
+  cookies.remove("user", { path: "/" });
 };
 
-// export รวมเป็น service
+// =========================
+// 📦 export service
+// =========================
 export default {
   getUser,
   getAccessToken,

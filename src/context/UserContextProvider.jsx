@@ -1,37 +1,28 @@
-import { useState } from "react";
-import { UserContext } from "./UserContext";
-import TokenService from "../service/token.service";
+import { useState, useEffect } from "react";
+import { UserContext } from "./UserContext.jsx";
+import TokenService from "../service/token.service.js";
 
 export const UserContextProvider = ({ children }) => {
-  /**
-   * 📌 userInfo
-   * - เก็บข้อมูล user ที่ login อยู่
-   * - ตอนเปิดเว็บใหม่ → ดึงจาก cookie มาก่อน
-   */
-  const [userInfo, setUserInfo] = useState(TokenService.getUser());
+  const [userInfo, setUserInfo] = useState(getUser);
 
-  /**
-   * 📌 login
-   * - เก็บ user ลง state
-   * - บันทึกลง cookie
-   */
-  const logIn = (user) => {
-    setUserInfo(user);
-    TokenService.setUser(user);
-  };
+  const logIn = (user) => setUserInfo(user);
 
-  /**
-   * 📌 logout
-   * - ล้าง state
-   * - ลบ cookie
-   */
-  const logOut = () => {
+  const logout = () => {
     setUserInfo(null);
     TokenService.removeUser();
   };
 
+  function getUser() {
+    const saveUser = TokenService.getUser() || null;
+    return saveUser;
+  }
+
+  useEffect(() => {
+    TokenService.setUser(userInfo);
+  }, [userInfo]);
+
   return (
-    <UserContext.Provider value={{ userInfo, logIn, logOut }}>
+    <UserContext.Provider value={{ userInfo, logIn, logout }}>
       {children}
     </UserContext.Provider>
   );

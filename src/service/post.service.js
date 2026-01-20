@@ -17,14 +17,12 @@ const getByAuthorId = async (id) => {
   return await api.get(`${API_URL}/author/${id}`);
 };
 
-// CREATE POST (multipart/form-data) ✅
-const createPost = async (post) => {
-  return await api.post(API_URL + "/create", post, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+// CREATE POST ✅ CLEAN
+const createPost = async (formData) => {
+  return await api.post(`${API_URL}/create`, formData);
 };
+
+
 
 // UPDATE
 const updatePost = async (id, post) => {

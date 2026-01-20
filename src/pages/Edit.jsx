@@ -11,9 +11,9 @@ const Edit = () => {
 
   const [posts, setPosts] = useState({
     title: "",
-    file: "",
     summary: "",
     content: "",
+    file: null,
   });
 
   useEffect(() => {
@@ -52,73 +52,101 @@ const Edit = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center p-4">
-      <div className="card w-full max-w-3xl bg-base-100 shadow-xl">
-        <div className="card-body">
-          <h2 className="text-2xl font-bold text-center">Edit Post</h2>
+    <div className="max-w-3xl mx-auto px-4 py-12">
+      <div className="bg-base-100 border border-base-300 rounded-2xl">
+        <div className="px-8 py-10 space-y-10">
+          {/* Header */}
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold tracking-tight text-base-content">
+              Edit Post
+            </h1>
+            <p className="text-base-content/70">
+              Update your article content and details.
+            </p>
+          </div>
 
-          <input
-            type="text"
-            name="title"
-            className="input input-bordered mt-4"
-            placeholder="Title"
-            value={posts.title}
-            onChange={handleChange}
-          />
+          <div className="divider" />
 
-          <input
-            type="text"
-            name="summary"
-            className="input input-bordered mt-4"
-            placeholder="Summary"
-            value={posts.summary}
-            onChange={handleChange}
-          />
+          {/* Title */}
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-base-content">
+              Title
+            </label>
+            <input
+              type="text"
+              name="title"
+              value={posts.title}
+              onChange={handleChange}
+              className="input input-bordered w-full bg-base-100 text-lg"
+              placeholder="Post title"
+            />
+          </div>
 
-          <p className="mt-4 font-semibold">Content</p>
+          {/* Summary */}
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-base-content">
+              Summary
+            </label>
+            <textarea
+              name="summary"
+              value={posts.summary}
+              onChange={handleChange}
+              className="textarea textarea-bordered w-full bg-base-100 min-h-[120px]"
+              placeholder="Brief description of the post"
+            />
+          </div>
 
-          <ReactQuill
-            theme="snow"
-            value={posts.content}
-            onChange={(value) =>
-              setPosts((prev) => ({ ...prev, content: value }))
-            }
-            modules={{
-              toolbar: [
-                [{ header: [1, 2, false] }],
-                ["bold", "italic", "underline"],
-                [{ list: "ordered" }, { list: "bullet" }],
-                ["link", "image"],
-                ["clean"],
-              ],
-            }}
-            formats={[
-              "header",
-              "bold",
-              "italic",
-              "underline",
-              "list",
-              "bullet",
-              "link",
-              "image",
-            ]}
-            style={{ height: "300px", marginBottom: "2rem" }}
-          />
+          {/* Content */}
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-base-content">
+              Content
+            </label>
+            <div className="border border-base-300 rounded-xl overflow-hidden bg-base-100">
+              <ReactQuill
+                theme="snow"
+                value={posts.content}
+                onChange={(value) =>
+                  setPosts((prev) => ({ ...prev, content: value }))
+                }
+                style={{ height: "320px" }}
+                modules={{
+                  toolbar: [
+                    [{ header: [1, 2, false] }],
+                    ["bold", "italic", "underline"],
+                    [{ list: "ordered" }, { list: "bullet" }],
+                    ["link", "image"],
+                    ["clean"],
+                  ],
+                }}
+              />
+            </div>
+          </div>
 
-          <input
-            type="file"
-            className="file-input file-input-bordered mt-4"
-            onChange={(e) =>
-              setPosts((prev) => ({ ...prev, file: e.target.files[0] }))
-            }
-          />
+          {/* Cover Image */}
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-base-content">
+              Cover Image
+            </label>
+            <input
+              type="file"
+              className="file-input file-input-bordered w-full bg-base-100"
+              onChange={(e) =>
+                setPosts((prev) => ({ ...prev, file: e.target.files[0] }))
+              }
+            />
+          </div>
 
-          <button
-            onClick={handleSubmit}
-            className="btn btn-primary w-full mt-6"
-          >
-            Update Post
-          </button>
+          <div className="divider" />
+
+          {/* Actions */}
+          <div className="flex justify-end">
+            <button
+              onClick={handleSubmit}
+              className="btn btn-primary px-10"
+            >
+              Update Post
+            </button>
+          </div>
         </div>
       </div>
     </div>
